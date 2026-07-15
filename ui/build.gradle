@@ -1,0 +1,45 @@
+plugins {
+    id 'base'
+    id "com.github.node-gradle.node" version "7.1.0"
+}
+
+group 'run.moonlit.playground.ui'
+
+node {
+    download = true
+    version = '22.23.1'
+    pnpmVersion = '11.12.0'
+}
+
+tasks.withType(PnpmTask).configureEach {
+    environment.put('CI', 'true')
+}
+
+tasks.register('pnpmBuild', PnpmTask) {
+    group = 'build'
+    description = 'Build the Halo Console UI bundle using pnpm'
+    args = ['build']
+    dependsOn tasks.named('pnpmInstall')
+    inputs.dir(layout.projectDirectory.dir('src'))
+    inputs.files(fileTree(
+        dir: layout.projectDirectory,
+        includes: ['*.cjs', '*.ts', '*.js', '*.json', '*.yaml', '*.mjs']))
+    outputs.dirs(
+        layout.buildDirectory.dir('dist'),
+        layout.buildDirectory.dir('frontend-dist'))
+}
+
+tasks.register('pnpmCheck', PnpmTask) {
+    group = 'verification'
+    description = 'Run UI tests'
+    args = ['test:unit']
+    dependsOn tasks.named('pnpmInstall')
+}
+
+tasks.named('check') {
+    dependsOn tasks.named('pnpmCheck')
+}
+
+tasks.named('assemble') {
+    dependsOn tasks.named('pnpmBuild')
+}

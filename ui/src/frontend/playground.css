@@ -1,0 +1,683 @@
+.moonlit-playground {
+  --moonlit-playground-accent: #3fa4ff;
+  --moonlit-playground-border: #d1d5db;
+  --moonlit-playground-border-soft: #e5e7eb;
+  --moonlit-playground-code-text: #24292f;
+  --moonlit-playground-danger: #cf222e;
+  --moonlit-playground-danger-text: #cf222e;
+  --moonlit-playground-dim: #8c959f;
+  --moonlit-playground-gutter: #f6f8fa;
+  --moonlit-playground-gutter-text: #8c959f;
+  --moonlit-playground-muted: #6b7280;
+  --moonlit-playground-output: #f8fafc;
+  --moonlit-playground-output-text: #24292f;
+  --moonlit-playground-preview-bg: #fff;
+  --moonlit-playground-strong: #111827;
+  --moonlit-playground-surface: #fff;
+  --moonlit-playground-surface-hover: #f3f4f6;
+  --moonlit-playground-surface-soft: #f8fafc;
+  --moonlit-playground-text: #374151;
+  --moonlit-playground-warning: #9a6700;
+  --moonlit-playground-warning-text: #9a6700;
+  --moonlit-playground-font-mono: ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+  --moonlit-playground-font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  color-scheme: light;
+  width: 100%;
+  margin: 40px 0;
+  color: var(--moonlit-playground-text);
+  font-family: var(--moonlit-playground-font-sans);
+  line-height: 1.5;
+}
+
+:where(.dark, .color-scheme-dark, [data-color-scheme="dark"]) .moonlit-playground {
+  --moonlit-playground-border: #3f3f46;
+  --moonlit-playground-border-soft: rgb(63 63 70 / 30%);
+  --moonlit-playground-code-text: #a9b1d6;
+  --moonlit-playground-danger: #fb7185;
+  --moonlit-playground-danger-text: #f87171;
+  --moonlit-playground-dim: #71717a;
+  --moonlit-playground-gutter: #1d1d20;
+  --moonlit-playground-gutter-text: #52525b;
+  --moonlit-playground-muted: #a1a1aa;
+  --moonlit-playground-output: rgb(9 9 11 / 60%);
+  --moonlit-playground-output-text: #e4e4e7;
+  --moonlit-playground-strong: #f4f4f5;
+  --moonlit-playground-surface: #18181b;
+  --moonlit-playground-surface-hover: #27272a;
+  --moonlit-playground-surface-soft: rgb(39 39 42 / 30%);
+  --moonlit-playground-text: #d4d4d8;
+  --moonlit-playground-warning: #facc15;
+  --moonlit-playground-warning-text: #fef08a;
+  color-scheme: dark;
+}
+
+[data-code-playground] > .moonlit-playground__fallback-error {
+  margin: 0 0 12px;
+  padding: 12px 14px;
+  border: 1px solid #f1aeb5;
+  border-radius: 8px;
+  color: #82071e;
+  background: #ffebe9;
+  font: 500 14px/1.5 ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+:where(.dark, .color-scheme-dark, [data-color-scheme="dark"])
+  [data-code-playground]
+  > .moonlit-playground__fallback-error {
+  border-color: #7f1d1d;
+  color: #fecaca;
+  background: #450a0a;
+}
+
+[data-code-playground][data-playground-enhancement-state="failed"]
+  > pre[data-playground-file],
+[data-code-playground][data-playground-enhancement-state="failed"]
+  > shiki-code[data-playground-source-wrapper] {
+  display: block !important;
+}
+
+.moonlit-playground__sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  clip-path: inset(50%) !important;
+}
+
+.moonlit-playground.is-enhanced > pre[data-playground-file],
+.moonlit-playground.is-enhanced > shiki-code[data-playground-source-wrapper] {
+  display: none;
+}
+
+.moonlit-playground__shell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: clip;
+  border: 0;
+  border-radius: 16px;
+  background: var(--moonlit-playground-surface-soft);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 10%), 0 2px 4px -2px rgb(0 0 0 / 10%);
+  isolation: isolate;
+}
+
+.moonlit-playground__shell::after {
+  position: absolute;
+  z-index: 10;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 1px var(--moonlit-playground-border-soft);
+  content: "";
+  pointer-events: none;
+}
+
+.moonlit-playground button {
+  margin: 0;
+  text-decoration: none;
+}
+
+.moonlit-playground__toolbar,
+.moonlit-playground__output-toolbar {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  height: 44px;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  border: 0;
+  background: var(--moonlit-playground-surface);
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 10%), 0 1px 2px -1px rgb(0 0 0 / 10%);
+  letter-spacing: 0.025em;
+}
+
+.moonlit-playground__toolbar {
+  padding: 0 20px;
+  gap: 12px;
+}
+
+.moonlit-playground__files,
+.moonlit-playground__output-tabs {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 20px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.moonlit-playground__label {
+  color: var(--moonlit-playground-text);
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.moonlit-playground__files::-webkit-scrollbar,
+.moonlit-playground__output-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.moonlit-playground__file,
+.moonlit-playground__output-tab,
+.moonlit-playground__view {
+  position: relative;
+  flex: none;
+  height: 44px;
+  padding: 12px 0;
+  border: 0;
+  color: var(--moonlit-playground-muted);
+  background: transparent;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  transition: color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.moonlit-playground__file::before,
+.moonlit-playground__output-tab::before,
+.moonlit-playground__view::before {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 1px;
+  background-image: linear-gradient(
+    to right,
+    transparent,
+    var(--moonlit-playground-accent),
+    transparent
+  );
+  content: "";
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.moonlit-playground__file:hover,
+.moonlit-playground__output-tab:hover,
+.moonlit-playground__view:hover {
+  color: var(--moonlit-playground-text);
+}
+
+.moonlit-playground__file[aria-selected="true"],
+.moonlit-playground__output-tab[aria-selected="true"],
+.moonlit-playground__view[aria-selected="true"] {
+  color: var(--moonlit-playground-accent);
+}
+
+.moonlit-playground__file[aria-selected="true"]::before,
+.moonlit-playground__output-tab[aria-selected="true"]::before,
+.moonlit-playground__view[aria-selected="true"]::before {
+  opacity: 0.5;
+}
+
+.moonlit-playground__file:focus-visible,
+.moonlit-playground__output-tab:focus-visible,
+.moonlit-playground__view:focus-visible {
+  border-radius: 4px;
+  outline: 1px solid rgb(63 164 255 / 65%);
+  outline-offset: -3px;
+}
+
+.moonlit-playground__actions {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+}
+
+.moonlit-playground__provider {
+  color: var(--moonlit-playground-dim);
+  font-size: 10px;
+  letter-spacing: .02em;
+  white-space: nowrap;
+}
+
+.moonlit-playground__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-right: 4px;
+  color: var(--moonlit-playground-dim);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.moonlit-playground__status::before {
+  width: 6px;
+  height: 6px;
+  flex: none;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 0 3px rgb(113 113 122 / 12%);
+  content: "";
+}
+
+.moonlit-playground__status[data-status="loading"],
+.moonlit-playground__status[data-status="dirty"] {
+  color: var(--moonlit-playground-warning);
+}
+
+.moonlit-playground__status[data-status="success"] {
+  color: var(--moonlit-playground-accent);
+}
+
+.moonlit-playground__status[data-status="error"] {
+  color: var(--moonlit-playground-danger);
+}
+
+.moonlit-playground__button,
+.moonlit-playground__icon-button,
+.moonlit-playground__clear {
+  display: inline-flex;
+  min-height: 0;
+  align-items: center;
+  justify-content: center;
+  place-items: center;
+  border: 0;
+  border-radius: 6px;
+  color: var(--moonlit-playground-muted);
+  background: transparent;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  transition: color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 150ms cubic-bezier(0.4, 0, 0.2, 1),
+    transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.moonlit-playground [hidden] {
+  display: none !important;
+}
+
+.moonlit-playground__button {
+  min-width: 0;
+  padding: 0;
+}
+
+.moonlit-playground__icon-button,
+.moonlit-playground__clear {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+}
+
+.moonlit-playground__icon-button svg,
+.moonlit-playground__clear svg {
+  width: 14px;
+  height: 14px;
+}
+
+.moonlit-playground__button:hover,
+.moonlit-playground__icon-button:hover,
+.moonlit-playground__clear:hover {
+  color: var(--moonlit-playground-text);
+  background: var(--moonlit-playground-surface-hover);
+}
+
+.moonlit-playground__button:focus-visible,
+.moonlit-playground__icon-button:focus-visible,
+.moonlit-playground__clear:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 1px var(--moonlit-playground-dim);
+}
+
+.moonlit-playground__button.is-primary:active {
+  transform: scale(0.98);
+}
+
+.moonlit-playground__button:disabled,
+.moonlit-playground__icon-button:disabled {
+  cursor: wait;
+  opacity: 0.5;
+}
+
+.moonlit-playground__button.is-primary {
+  gap: 6px;
+  min-width: 0;
+  height: 36px;
+  padding: 0 16px;
+  border-radius: 9999px;
+  color: var(--moonlit-playground-strong);
+  background: var(--moonlit-playground-surface-hover);
+  box-shadow: inset 0 0 0 1px var(--moonlit-playground-border-soft),
+    0 20px 25px -5px rgb(0 0 0 / 10%), 0 8px 10px -6px rgb(0 0 0 / 10%);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.moonlit-playground__button.is-primary:hover {
+  background: rgb(63 63 70 / 70%);
+  transform: scale(1.05);
+}
+
+.moonlit-playground__button.is-primary svg {
+  width: 12px;
+  height: 12px;
+  transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.moonlit-playground__button.is-primary:hover svg {
+  transform: translateX(1px);
+}
+
+.moonlit-playground__workspace {
+  min-width: 0;
+}
+
+.moonlit-playground__editor {
+  position: relative;
+  height: 512px;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+}
+
+.moonlit-playground__editor::before {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  background-image: radial-gradient(rgb(63 63 70 / 80%) 10%, transparent 10%);
+  background-position: 4% -3%;
+  background-size: 8px 8px;
+  content: "";
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.moonlit-playground__editor-host {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.moonlit-playground__editor .moonlit-playground__button.is-primary {
+  position: absolute;
+  z-index: 2;
+  right: 24px;
+  bottom: 24px;
+}
+
+.moonlit-playground .cm-editor {
+  height: 100%;
+  color: var(--moonlit-playground-code-text);
+  font-family: var(--moonlit-playground-font-mono);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  animation: moonlit-playground-editor-fade 500ms ease;
+}
+
+.moonlit-playground .cm-scroller {
+  height: 512px;
+  padding: 24px;
+}
+
+.moonlit-playground .cm-content {
+  min-width: max-content;
+  padding: 0;
+  line-height: 24px;
+}
+
+.moonlit-playground .cm-line {
+  padding: 0 2px 0 0;
+}
+
+.moonlit-playground .cm-gutters {
+  margin: 0;
+  padding: 0;
+  color: #fff;
+  background: transparent;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.moonlit-playground .cm-lineNumbers {
+  position: relative;
+  margin-left: -24px;
+  padding: 4px 20px 0;
+  overflow: hidden;
+  color: var(--moonlit-playground-gutter-text);
+  background: var(--moonlit-playground-gutter);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.moonlit-playground .cm-lineNumbers::before {
+  position: absolute;
+  inset: 0;
+  background-attachment: fixed;
+  background-image: radial-gradient(rgb(63 63 70 / 80%) 10%, transparent 10%);
+  background-position: 4% -3%;
+  background-size: 8px 8px;
+  content: "";
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.moonlit-playground .cm-foldGutter {
+  display: none !important;
+}
+
+.moonlit-playground .cm-lineNumbers .cm-gutterElement {
+  min-width: auto;
+  position: relative;
+  padding-right: 0;
+  padding-left: 0;
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.moonlit-playground .cm-activeLine,
+.moonlit-playground .cm-activeLineGutter {
+  border-radius: 4px;
+  background-color: rgb(161 161 170 / 10%);
+}
+
+.moonlit-playground .cm-tooltip,
+.moonlit-playground .cm-panels {
+  border-color: var(--moonlit-playground-border);
+  color: var(--moonlit-playground-text);
+  background: var(--moonlit-playground-surface);
+}
+
+.moonlit-playground .cm-tooltip-autocomplete > ul > li[aria-selected] {
+  color: var(--moonlit-playground-strong);
+  background: var(--moonlit-playground-surface-hover);
+}
+
+.moonlit-playground__output-toolbar {
+  padding: 0 20px;
+  border-radius: 16px 16px 0 0;
+}
+
+.moonlit-playground__output-tabs {
+  gap: 20px;
+}
+
+.moonlit-playground__output-tab {
+  height: 44px;
+}
+
+.moonlit-playground__clear {
+  min-width: 24px;
+}
+
+.moonlit-playground__preview iframe {
+  display: block;
+  width: 100%;
+  height: 320px;
+  min-height: 320px;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  background: var(--moonlit-playground-preview-bg);
+}
+
+.moonlit-playground__preview,
+.moonlit-playground__console {
+  min-width: 0;
+  height: 320px;
+  min-height: 320px;
+  max-height: 512px;
+  background: var(--moonlit-playground-output);
+}
+
+.moonlit-playground__console-output {
+  position: relative;
+  height: 100%;
+  min-width: 0;
+  overflow: auto;
+  padding: 24px;
+  scrollbar-color: var(--moonlit-playground-border) transparent;
+}
+
+.moonlit-playground__console-output::before {
+  position: absolute;
+  inset: 0;
+  background-image: var(--moonlit-playground-console-texture, none);
+  background-size: 30%;
+  content: "";
+  mix-blend-mode: overlay;
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.moonlit-playground__console-row {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  min-width: 0;
+  margin: 0 0 10px;
+  padding: 0;
+  border: 0;
+  color: var(--moonlit-playground-output-text);
+  font-family: var(--moonlit-playground-font-mono);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 24px;
+}
+
+.moonlit-playground__console-icon {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  margin-top: 4px;
+  stroke-width: 1.8;
+}
+
+.moonlit-playground__console-row:last-child {
+  margin-bottom: 0;
+}
+
+.moonlit-playground__console-row[data-method="warn"] {
+  color: var(--moonlit-playground-warning-text);
+}
+
+.moonlit-playground__console-row[data-method="error"],
+.moonlit-playground__console-row[data-method="assert"] {
+  color: var(--moonlit-playground-danger-text);
+}
+
+.moonlit-playground__console-method {
+  display: none;
+}
+
+.moonlit-playground__console-row pre {
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: inherit;
+  background: transparent;
+  font: inherit;
+  white-space: pre-wrap;
+}
+
+.moonlit-playground__mobile-views {
+  display: none;
+}
+
+@media (max-width: 639px) {
+  .moonlit-playground {
+    width: 100%;
+    margin: 40px 0;
+  }
+
+  .moonlit-playground__toolbar {
+    height: 44px;
+    padding-inline: 20px;
+    gap: 8px;
+  }
+
+  .moonlit-playground__status {
+    width: 6px;
+    margin-right: 0;
+    overflow: hidden;
+  }
+
+  .moonlit-playground__provider {
+    display: none;
+  }
+
+  .moonlit-playground__status::before {
+    margin-right: 6px;
+  }
+
+  .moonlit-playground__icon-button,
+  .moonlit-playground__clear {
+    width: 24px;
+    height: 24px;
+  }
+
+  .moonlit-playground__editor .moonlit-playground__button.is-primary {
+    right: 24px;
+    bottom: 24px;
+  }
+
+  .moonlit-playground__output-toolbar {
+    padding-inline: 20px;
+  }
+
+  .moonlit-playground__preview iframe,
+  .moonlit-playground__preview,
+  .moonlit-playground__console {
+    height: 320px;
+    min-height: 320px;
+  }
+}
+
+@keyframes moonlit-playground-editor-fade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .moonlit-playground *,
+  .moonlit-playground *::before,
+  .moonlit-playground *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

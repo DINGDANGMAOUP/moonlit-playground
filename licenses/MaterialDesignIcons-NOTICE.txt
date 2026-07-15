@@ -1,0 +1,10 @@
+Material Design Icons
+
+Icon set by Pictogrammers:
+https://github.com/Templarian/MaterialDesign
+
+Distributed in Iconify JSON format by Iconify:
+https://icon-sets.iconify.design/mdi/
+
+Licensed under the Apache License, Version 2.0.
+The full license text is packaged as Sandpack-Apache-2.0.txt in this directory.

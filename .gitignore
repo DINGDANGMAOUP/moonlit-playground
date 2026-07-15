@@ -1,0 +1,14 @@
+/.gradle/
+/build/
+/ui/build/
+/ui/.gradle/
+/ui/node_modules/
+/ui/.rsbuild-cache/
+/ui/coverage/
+/.codex-evidence/
+/output/
+/.playwright-cli/
+/.idea/
+*.iml
+.DS_Store
+*.log

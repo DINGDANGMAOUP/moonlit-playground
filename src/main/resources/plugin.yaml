@@ -1,0 +1,19 @@
+apiVersion: plugin.halo.run/v1alpha1
+kind: Plugin
+metadata:
+  name: moonlit-playground
+spec:
+  enabled: true
+  requires: ">=2.25.0"
+  author:
+    name: dingdangmaoup
+    website: https://github.com/DINGDANGMAOUP
+  logo: logo.svg
+  displayName: "Moonlit Playground"
+  description: "为 Halo 默认编辑器与标准主题提供可配置、多文件、按需加载的在线代码 Playground"
+  homepage: https://github.com/DINGDANGMAOUP/moonlit-playground
+  repo: https://github.com/DINGDANGMAOUP/moonlit-playground.git
+  issues: https://github.com/DINGDANGMAOUP/moonlit-playground/issues
+  license:
+    - name: "MIT"
+      url: https://github.com/DINGDANGMAOUP/moonlit-playground/blob/main/LICENSE
