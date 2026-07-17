@@ -74,32 +74,55 @@ const ALLOWED_TEMPLATES = new Set<SandpackTemplate>([
   "solid",
 ]);
 
-const darkPlaygroundHighlightStyle = HighlightStyle.define([
-  { tag: [tags.comment, tags.lineComment, tags.blockComment], color: "#565f89" },
-  { tag: [tags.keyword, tags.controlKeyword, tags.moduleKeyword, tags.operatorKeyword], color: "#bb9af7" },
-  { tag: [tags.tagName, tags.deleted], color: "#f7768e" },
-  { tag: [tags.punctuation, tags.bracket], color: "#698cd6" },
-  { tag: [tags.definition(tags.variableName), tags.function(tags.variableName)], color: "#7aa2f7" },
-  { tag: [tags.propertyName, tags.attributeName], color: "#73daca" },
-  { tag: [tags.string, tags.special(tags.string)], color: "#9ece6a" },
-  { tag: [tags.number, tags.bool, tags.null], color: "#ff9e64" },
-  { tag: [tags.typeName, tags.className], color: "#2ac3de" },
-  { tag: [tags.operator, tags.special(tags.variableName)], color: "#89ddff" },
-  { tag: tags.invalid, color: "#f7768e", textDecoration: "underline" },
-]);
-
-const lightPlaygroundHighlightStyle = HighlightStyle.define([
-  { tag: [tags.comment, tags.lineComment, tags.blockComment], color: "#6e7781" },
-  { tag: [tags.keyword, tags.controlKeyword, tags.moduleKeyword, tags.operatorKeyword], color: "#cf222e" },
-  { tag: [tags.tagName, tags.deleted], color: "#116329" },
-  { tag: [tags.punctuation, tags.bracket], color: "#57606a" },
-  { tag: [tags.definition(tags.variableName), tags.function(tags.variableName)], color: "#8250df" },
-  { tag: [tags.propertyName, tags.attributeName], color: "#0550ae" },
-  { tag: [tags.string, tags.special(tags.string)], color: "#0a3069" },
-  { tag: [tags.number, tags.bool, tags.null], color: "#0550ae" },
-  { tag: [tags.typeName, tags.className], color: "#953800" },
-  { tag: [tags.operator, tags.special(tags.variableName)], color: "#cf222e" },
-  { tag: tags.invalid, color: "#82071e", textDecoration: "underline" },
+// Keep token colors bound to the Playground palette instead of choosing a
+// HighlightStyle once during construction. CSS custom properties update in
+// place when a theme switches between explicit or system-following schemes.
+const playgroundHighlightStyle = HighlightStyle.define([
+  {
+    tag: [tags.comment, tags.lineComment, tags.blockComment],
+    color: "var(--moonlit-playground-syntax-comment)",
+  },
+  {
+    tag: [tags.keyword, tags.controlKeyword, tags.moduleKeyword, tags.operatorKeyword],
+    color: "var(--moonlit-playground-syntax-keyword)",
+  },
+  {
+    tag: [tags.tagName, tags.deleted],
+    color: "var(--moonlit-playground-syntax-tag)",
+  },
+  {
+    tag: [tags.punctuation, tags.bracket],
+    color: "var(--moonlit-playground-syntax-punctuation)",
+  },
+  {
+    tag: [tags.definition(tags.variableName), tags.function(tags.variableName)],
+    color: "var(--moonlit-playground-syntax-definition)",
+  },
+  {
+    tag: [tags.propertyName, tags.attributeName],
+    color: "var(--moonlit-playground-syntax-property)",
+  },
+  {
+    tag: [tags.string, tags.special(tags.string)],
+    color: "var(--moonlit-playground-syntax-string)",
+  },
+  {
+    tag: [tags.number, tags.bool, tags.null],
+    color: "var(--moonlit-playground-syntax-literal)",
+  },
+  {
+    tag: [tags.typeName, tags.className],
+    color: "var(--moonlit-playground-syntax-type)",
+  },
+  {
+    tag: [tags.operator, tags.special(tags.variableName)],
+    color: "var(--moonlit-playground-syntax-operator)",
+  },
+  {
+    tag: tags.invalid,
+    color: "var(--moonlit-playground-syntax-invalid)",
+    textDecoration: "underline",
+  },
 ]);
 
 const languageForPath = (path: string, declaredLanguage: string): Extension => {
@@ -399,7 +422,6 @@ class MoonlitPlayground {
   private readonly showFiles: boolean;
   private readonly showPreview: boolean;
   private readonly showConsole: boolean;
-  private readonly highlightStyle: HighlightStyle;
   private readonly runMode: "auto" | "manual";
   private readonly title: string;
   private readonly instanceId = `moonlit-playground-${++playgroundSequence}`;
@@ -458,9 +480,6 @@ class MoonlitPlayground {
 
   constructor(root: HTMLElement) {
     this.root = root;
-    this.highlightStyle = getComputedStyle(root).colorScheme.includes("dark")
-      ? darkPlaygroundHighlightStyle
-      : lightPlaygroundHighlightStyle;
     this.runMode = readPlaygroundRunMode(root);
     this.title = readPlaygroundRootField(root, "title") || "Live Code Playground";
     this.dependencies = parseDependencies(readPlaygroundRootField(root, "dependencies"));
@@ -724,7 +743,7 @@ class MoonlitPlayground {
       extensions: [
         basicSetup,
         languageForPath(file.path, file.language),
-        syntaxHighlighting(this.highlightStyle),
+        syntaxHighlighting(playgroundHighlightStyle),
         EditorView.contentAttributes.of({
           "aria-label": `编辑 ${file.label}`,
           "aria-describedby": this.root.dataset.descriptionId || "",
@@ -733,16 +752,22 @@ class MoonlitPlayground {
         EditorView.theme({
           "&": { height: "100%", backgroundColor: "transparent" },
           ".cm-scroller": { overflow: "auto", fontFamily: "inherit" },
-          ".cm-content": { caretColor: "#f4f4f5" },
-          ".cm-cursor, .cm-dropCursor": { borderLeftColor: "#f4f4f5" },
+          ".cm-content": {
+            caretColor: "var(--moonlit-playground-caret)",
+          },
+          ".cm-cursor, .cm-dropCursor": {
+            borderLeftColor: "var(--moonlit-playground-caret)",
+          },
           ".cm-gutters": {
             backgroundColor: "transparent",
             border: "none",
-            color: "#52525b",
+            color: "var(--moonlit-playground-gutter-text)",
           },
-          ".cm-activeLine, .cm-activeLineGutter": { backgroundColor: "#27272a66" },
+          ".cm-activeLine, .cm-activeLineGutter": {
+            backgroundColor: "var(--moonlit-playground-active-line)",
+          },
           ".cm-selectionBackground, &.cm-focused .cm-selectionBackground": {
-            backgroundColor: "#0ea5e944",
+            backgroundColor: "var(--moonlit-playground-selection)",
           },
         }),
         EditorView.editable.of(!file.readOnly),

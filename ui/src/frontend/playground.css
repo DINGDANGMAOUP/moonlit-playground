@@ -1,7 +1,9 @@
 .moonlit-playground {
-  --moonlit-playground-accent: #3fa4ff;
+  --moonlit-playground-accent: var(--accent-mid, #3fa4ff);
+  --moonlit-playground-active-line: rgb(84 174 255 / 10%);
   --moonlit-playground-border: #d1d5db;
   --moonlit-playground-border-soft: #e5e7eb;
+  --moonlit-playground-caret: #24292f;
   --moonlit-playground-code-text: #24292f;
   --moonlit-playground-danger: #cf222e;
   --moonlit-playground-danger-text: #cf222e;
@@ -12,10 +14,22 @@
   --moonlit-playground-output: #f8fafc;
   --moonlit-playground-output-text: #24292f;
   --moonlit-playground-preview-bg: #fff;
+  --moonlit-playground-selection: rgb(14 165 233 / 27%);
   --moonlit-playground-strong: #111827;
   --moonlit-playground-surface: #fff;
   --moonlit-playground-surface-hover: #f3f4f6;
   --moonlit-playground-surface-soft: #f8fafc;
+  --moonlit-playground-syntax-comment: #6e7781;
+  --moonlit-playground-syntax-definition: #8250df;
+  --moonlit-playground-syntax-invalid: #82071e;
+  --moonlit-playground-syntax-keyword: #cf222e;
+  --moonlit-playground-syntax-literal: #0550ae;
+  --moonlit-playground-syntax-operator: #cf222e;
+  --moonlit-playground-syntax-property: #0550ae;
+  --moonlit-playground-syntax-punctuation: #57606a;
+  --moonlit-playground-syntax-string: #0a3069;
+  --moonlit-playground-syntax-tag: #116329;
+  --moonlit-playground-syntax-type: #953800;
   --moonlit-playground-text: #374151;
   --moonlit-playground-warning: #9a6700;
   --moonlit-playground-warning-text: #9a6700;
@@ -32,8 +46,10 @@
 }
 
 :where(.dark, .color-scheme-dark, [data-color-scheme="dark"]) .moonlit-playground {
+  --moonlit-playground-active-line: rgb(161 161 170 / 10%);
   --moonlit-playground-border: #3f3f46;
   --moonlit-playground-border-soft: rgb(63 63 70 / 30%);
+  --moonlit-playground-caret: #f4f4f5;
   --moonlit-playground-code-text: #a9b1d6;
   --moonlit-playground-danger: #fb7185;
   --moonlit-playground-danger-text: #f87171;
@@ -43,14 +59,65 @@
   --moonlit-playground-muted: #a1a1aa;
   --moonlit-playground-output: rgb(9 9 11 / 60%);
   --moonlit-playground-output-text: #e4e4e7;
+  --moonlit-playground-selection: rgb(14 165 233 / 27%);
   --moonlit-playground-strong: #f4f4f5;
   --moonlit-playground-surface: #18181b;
   --moonlit-playground-surface-hover: #27272a;
   --moonlit-playground-surface-soft: rgb(39 39 42 / 30%);
+  --moonlit-playground-syntax-comment: #565f89;
+  --moonlit-playground-syntax-definition: #7aa2f7;
+  --moonlit-playground-syntax-invalid: #f7768e;
+  --moonlit-playground-syntax-keyword: #bb9af7;
+  --moonlit-playground-syntax-literal: #ff9e64;
+  --moonlit-playground-syntax-operator: #89ddff;
+  --moonlit-playground-syntax-property: #73daca;
+  --moonlit-playground-syntax-punctuation: #698cd6;
+  --moonlit-playground-syntax-string: #9ece6a;
+  --moonlit-playground-syntax-tag: #f7768e;
+  --moonlit-playground-syntax-type: #2ac3de;
   --moonlit-playground-text: #d4d4d8;
   --moonlit-playground-warning: #facc15;
   --moonlit-playground-warning-text: #fef08a;
   color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :where(.color-scheme-auto, [data-color-scheme="auto"]) .moonlit-playground {
+    --moonlit-playground-active-line: rgb(161 161 170 / 10%);
+    --moonlit-playground-border: #3f3f46;
+    --moonlit-playground-border-soft: rgb(63 63 70 / 30%);
+    --moonlit-playground-caret: #f4f4f5;
+    --moonlit-playground-code-text: #a9b1d6;
+    --moonlit-playground-danger: #fb7185;
+    --moonlit-playground-danger-text: #f87171;
+    --moonlit-playground-dim: #71717a;
+    --moonlit-playground-gutter: #1d1d20;
+    --moonlit-playground-gutter-text: #52525b;
+    --moonlit-playground-muted: #a1a1aa;
+    --moonlit-playground-output: rgb(9 9 11 / 60%);
+    --moonlit-playground-output-text: #e4e4e7;
+    --moonlit-playground-selection: rgb(14 165 233 / 27%);
+    --moonlit-playground-strong: #f4f4f5;
+    --moonlit-playground-surface: #18181b;
+    --moonlit-playground-surface-hover: #27272a;
+    --moonlit-playground-surface-soft: rgb(39 39 42 / 30%);
+    --moonlit-playground-syntax-comment: #565f89;
+    --moonlit-playground-syntax-definition: #7aa2f7;
+    --moonlit-playground-syntax-invalid: #f7768e;
+    --moonlit-playground-syntax-keyword: #bb9af7;
+    --moonlit-playground-syntax-literal: #ff9e64;
+    --moonlit-playground-syntax-operator: #89ddff;
+    --moonlit-playground-syntax-property: #73daca;
+    --moonlit-playground-syntax-punctuation: #698cd6;
+    --moonlit-playground-syntax-string: #9ece6a;
+    --moonlit-playground-syntax-tag: #f7768e;
+    --moonlit-playground-syntax-type: #2ac3de;
+    --moonlit-playground-text: #d4d4d8;
+    --moonlit-playground-warning: #facc15;
+    --moonlit-playground-warning-text: #fef08a;
+    color-scheme: dark;
+  }
+
 }
 
 [data-code-playground] > .moonlit-playground__fallback-error {
@@ -70,6 +137,16 @@
   border-color: #7f1d1d;
   color: #fecaca;
   background: #450a0a;
+}
+
+@media (prefers-color-scheme: dark) {
+  :where(.color-scheme-auto, [data-color-scheme="auto"])
+    [data-code-playground]
+    > .moonlit-playground__fallback-error {
+    border-color: #7f1d1d;
+    color: #fecaca;
+    background: #450a0a;
+  }
 }
 
 [data-code-playground][data-playground-enhancement-state="failed"]
@@ -222,7 +299,7 @@
 .moonlit-playground__output-tab:focus-visible,
 .moonlit-playground__view:focus-visible {
   border-radius: 4px;
-  outline: 1px solid rgb(63 164 255 / 65%);
+  outline: 1px solid color-mix(in srgb, var(--moonlit-playground-accent) 65%, transparent);
   outline-offset: -3px;
 }
 
@@ -426,7 +503,13 @@
 .moonlit-playground .cm-content {
   min-width: max-content;
   padding: 0;
+  caret-color: var(--moonlit-playground-caret);
   line-height: 24px;
+}
+
+.moonlit-playground .cm-cursor,
+.moonlit-playground .cm-dropCursor {
+  border-left-color: var(--moonlit-playground-caret);
 }
 
 .moonlit-playground .cm-line {
@@ -436,7 +519,7 @@
 .moonlit-playground .cm-gutters {
   margin: 0;
   padding: 0;
-  color: #fff;
+  color: var(--moonlit-playground-gutter-text);
   background: transparent;
   font-size: 16px;
   line-height: 24px;
@@ -456,7 +539,6 @@
 .moonlit-playground .cm-lineNumbers::before {
   position: absolute;
   inset: 0;
-  background-attachment: fixed;
   background-image: radial-gradient(rgb(63 63 70 / 80%) 10%, transparent 10%);
   background-position: 4% -3%;
   background-size: 8px 8px;
@@ -481,7 +563,12 @@
 .moonlit-playground .cm-activeLine,
 .moonlit-playground .cm-activeLineGutter {
   border-radius: 4px;
-  background-color: rgb(161 161 170 / 10%);
+  background-color: var(--moonlit-playground-active-line);
+}
+
+.moonlit-playground .cm-selectionBackground,
+.moonlit-playground .cm-editor.cm-focused .cm-selectionBackground {
+  background-color: var(--moonlit-playground-selection);
 }
 
 .moonlit-playground .cm-tooltip,
